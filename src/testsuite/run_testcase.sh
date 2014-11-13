@@ -95,7 +95,7 @@ echo "TESTING SERVER";
 for f in ${TRACES}; do
     
     ./${SERVER_BIN} > /dev/null &
-    python ${TC_DIR}/${TESTING_PROG} ${HOST} ${PORT} ${TC_DIR}/$f
+    python2 ${TC_DIR}/${TESTING_PROG} ${HOST} ${PORT} ${TC_DIR}/$f
     
     kill $(jobs -p)
 done
