@@ -29,4 +29,5 @@
 *.hex
 
 # Binary
+*.tar.gz
 src/http_server
