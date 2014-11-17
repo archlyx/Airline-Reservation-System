@@ -91,7 +91,7 @@ int main(int argc,char *argv[])
         // single threaded
         /*handle_connection(&connfd);*/
         pool_add_task(threadpool, (void *)&handle_connection,
-                      (void *)&connfd);
+                      (void *)connfd);
     }
 }
 

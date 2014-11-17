@@ -158,7 +158,7 @@ static void *thread_do_work(void *pool)
     thread_pool->head = ((thread_pool->head == thread_pool->task_queue_size_limit) ? 0 : thread_pool->head);
 
     /* Do the task */
-    (* task->function)(task->argument);
+    (* task->function)(&task->argument);
 
     /* Unlock */
     pthread_mutex_unlock(&thread_pool->lock);
