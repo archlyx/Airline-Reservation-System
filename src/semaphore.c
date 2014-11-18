@@ -3,6 +3,8 @@
 #include <unistd.h>
 
 
+/* mutex: lock
+ * condition variable: notify */
 typedef struct m_sem_t {
   int value;
   pthread_mutex_t lock;
@@ -13,6 +15,7 @@ void sem_init(m_sem_t *s, int value);
 int sem_wait(m_sem_t *s);
 int sem_post(m_sem_t *s);
 
+/* Initialize the semaphore */
 void sem_init(m_sem_t *s, int value) {
   s->value = value;
   pthread_mutex_init(&s->lock, NULL);
