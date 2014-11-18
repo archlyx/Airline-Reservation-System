@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "thread_pool.h"
+#include "semaphore.h"
 
 /**
  *  @struct threadpool_task
@@ -23,18 +24,32 @@ typedef struct {
 } pool_task_t;
 
 
-/* Here we use a circular array to save the task queue */
+/* Standby list
+ * A link list is used to save the standby list
+ */
+typedef struct {
+  pool_task_t *task;
+  struct standby_t *next;
+  m_sem_t *sem;
+} standby_t;
+
+/*
+ * Here we use a circular array to save the task queue
+ */
 struct pool_t {
   pthread_mutex_t lock;
   pthread_cond_t notify;
   pthread_t *threads;
   pool_task_t *queue;
+  standby_t *standby;
   int head;
   int tail;
   int thread_count;
+  int standby_count;
   int task_queue_size_limit;
   int shutdown;
 };
+
 
 static void *thread_do_work(void *pool);
 
@@ -71,6 +86,10 @@ pool_t *pool_create(int queue_size, int num_threads)
   thread_pool->tail = 0;
 
   thread_pool->shutdown = 0;
+
+  /* Initialize the standby list */
+  thread_pool->standby = NULL; 
+  thread_pool->standby_count = 0;
 
   /* Initialize the mutex & condition variable */
   pthread_mutex_init(&thread_pool->lock, NULL);
@@ -161,9 +180,11 @@ static void *thread_do_work(void *pool)
     pthread_mutex_unlock(&thread_pool->lock);
 
     /* Do the task */
-    (* task->function)(task->argument);
+    task->function(task->argument);
   }
 
   pthread_exit(NULL);
   return NULL;
 }
+
+
